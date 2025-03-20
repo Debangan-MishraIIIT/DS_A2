@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+option go_package = "./proto";
+
+package lb_service;
+
+service LBCommunication {
+    // simple RPC
+    rpc GreetLB(ClientInfo) returns (ServerInfo);
+}
+
+service DirectCommunication {
+    // simple RPC
+    rpc SleepRequest(ClientRequest) returns (SleepResponse);
+}
+
+service MemoryService {
+    rpc SendMemoryUsage(MemoryRequest) returns (MemoryResponse);
+}
+
+message ClientInfo {
+    int32 clientID = 1;
+}
+
+message ClientRequest {
+    int32 clientID = 1;
+    int32 sleepDuration = 2;
+}
+
+message ServerInfo {
+    int32 serverID = 1;
+    string serverAddr = 2;
+}
+
+message SleepResponse{
+    string response = 1;
+}
+
+message MemoryRequest{
+    string clientPort = 1;
+    float usage = 2;
+}
+
+message MemoryResponse{
+    bool response = 1;
+}
