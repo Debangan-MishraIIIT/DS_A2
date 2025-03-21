@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package masterworker;
+
+option go_package = "masterworker/proto";
+
+service MasterService {
+  // Worker asks master if it should map
+  rpc ShouldMap(WorkerRequest) returns (MapResponse) {}
+
+  // Worker asks master if it should reduce
+  rpc ShouldReduce(WorkerRequest) returns (ReduceResponse) {}
+
+  // Worker notifies that mapping is complete
+  rpc MapDone(WorkerDone) returns (AckResponse) {}
+
+  // Worker notifies that reducing is complete
+  rpc ReduceDone(WorkerDone) returns (AckResponse) {}
+
+  // Worker polls for termination
+  rpc ShouldTerminate(WorkerRequest) returns (TerminateResponse) {}
+}
+
+message WorkerRequest {
+  int32 worker_id = 1;
+}
+
+message MapResponse {
+  bool should_map = 1;
+  int32 mapper_index = 2;
+  int32 num_reducers = 3;
+  string task = 4;
+}
+
+message ReduceResponse {
+  bool should_reduce = 1;
+  int32 reducer_index = 2;
+  string task = 3;
+}
+
+message WorkerDone {
+  int32 worker_id = 1;
+  int32 index = 2;
+}
+
+message AckResponse {
+  bool received = 1;
+}
+
+message TerminateResponse {
+  bool should_terminate = 1;
+}
