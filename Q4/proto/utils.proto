@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package BFT;
+
+option go_package = "./proto";
+
+service BFTService {
+    rpc SendOrder(OrderRequest) returns (OrderResponse) {}
+}
+
+message OrderRequest {
+    int32 sender_id = 1;
+    string order = 2;
+    int32 round = 3;
+}
+
+message OrderResponse {
+    bool received = 1;
+}
