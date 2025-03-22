@@ -1,0 +1,113 @@
+syntax = "proto3";
+
+option go_package = "./proto";
+
+package bank_service;
+
+service AdminService {
+rpc makeAccount(CreationRequest) returns (CreationResponse);
+}
+
+message CreationRequest {
+string username = 1;
+string password = 2;
+string bankNumber = 3;
+int32 balance = 4;
+}
+
+message CreationResponse {
+string response = 1;
+}
+
+service PaymentGateway {
+rpc ProcessTransaction(TransactionRequest) returns (TransactionResponse);
+rpc ProcessPayment(PaymentRequest) returns (PaymentResponse) {}
+}
+
+service BankService {
+rpc HandleTransaction(TransactionRequest) returns (TransactionResponse);
+rpc Prepare(PrepareRequest) returns (PrepareResponse) {}
+rpc Commit(CommitRequest) returns (CommitResponse) {}
+rpc Abort(AbortRequest) returns (AbortResponse) {}
+rpc TransferWithinBank(TransferRequest) returns (TransferResponse);
+}
+
+message TransactionRequest {
+string uuid = 1;
+string username = 2;
+string bank_number = 3;
+string transaction_type = 4;
+int32 amount = 5;
+string password = 6;
+}
+
+message TransactionResponse {
+bool success = 1;
+string message = 2;
+int32 balance = 3;
+}
+
+message PaymentRequest {
+string source_username = 1;
+string source_bank_number = 2;
+string target_username = 3;
+string target_bank_number = 4;
+int32 amount = 5;
+string password = 6;
+string uuid = 7;
+}
+
+message PaymentResponse {
+bool success = 1;
+string message = 2;
+int32 source_balance = 3;
+}
+
+// For 2PC protocol
+message PrepareRequest {
+string transaction_id = 1;
+string username = 2;
+string bank_number = 3;
+int32 amount = 4;
+string operation = 5; // "debit" or "credit"
+string password = 6;
+}
+
+message PrepareResponse {
+bool ready = 1;
+string message = 2;
+}
+
+message CommitRequest {
+string transaction_id = 1;
+}
+
+message CommitResponse {
+bool success = 1;
+string message = 2;
+int32 balance = 3;
+}
+
+message AbortRequest {
+string transaction_id = 1;
+}
+
+message AbortResponse {
+bool success = 1;
+string message = 2;
+}
+
+message TransferRequest {
+    string source_username = 1;
+    string target_username = 2;
+    int32 amount = 3;
+    string password = 4;
+}
+
+message TransferResponse {
+    bool success = 1;
+    string message = 2;
+    int32 new_balance = 3;
+}
+
+// protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative ./utils.proto
