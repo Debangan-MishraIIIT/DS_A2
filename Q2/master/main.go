@@ -26,12 +26,13 @@ type masterServer struct {
 
     // State tracking
     activeMappers   map[int32]bool
-    assignedMapperIndices map[int32]int32  // WorkerID -> MapperIndex
-    activeReducers  map[int32]bool
-    assignedReducerIndices map[int32]int32  // WorkerID -> ReducerIndex
+    assignedMapperIndices map[int32]int32
+	activeReducers  map[int32]bool
+    assignedReducerIndices map[int32]int32
     availableReducerIndices []int32
     completedReducerIndices map[int32]bool
-    mappersDone     int
+
+	mappersDone     int
     reduceQueue     []int32
     isTerminating   bool
 	nextMapperIndex int32
@@ -66,16 +67,14 @@ func (s *masterServer) ShouldMap(ctx context.Context, req *pb.WorkerRequest) (*p
 
 	workerID := req.WorkerId
 
-	// Check if we've already assigned enough mappers
 	if s.nextMapperIndex >= int32(s.numMappers) {
 		log.Printf("Worker %d asked to map but we have enough mappers", workerID)
 		return &pb.MapResponse{ShouldMap: false, MapperIndex: -1, NumReducers: -1, Task: s.task}, nil
 	}
 
-	// Assign the next available mapper index
 	mapperIndex := s.nextMapperIndex
 	s.activeMappers[workerID] = true
-	s.nextMapperIndex++ // Increment for next assignment
+	s.nextMapperIndex++ 
 
 	log.Printf("Assigned worker %d as mapper %d", workerID, mapperIndex)
 	return &pb.MapResponse{

@@ -79,7 +79,7 @@ func main() {
 			println("HUHGEVGHWVEGQWVGHE")
 			println(reduceResp.ReducerIndex)
 			index := strconv.Itoa(int(reduceResp.ReducerIndex))
-			callReducer(index, "wc") // Task hardcoded for simplicity
+			callReducer(index, reduceResp.Task) // Task hardcoded for simplicity
 
 			// Notify master that reducing is complete
 			_, err := client.ReduceDone(ctx, &pb.WorkerDone{
